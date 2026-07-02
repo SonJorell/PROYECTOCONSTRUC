@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased text-slate-200 bg-surface-950 font-sans;
+  }
+
+  /* Scrollbar personalizada */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #294669; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #478B8D; }
+
+  /* Focus visible accesible */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-accent;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-surface-800/60 backdrop-blur-sm border border-surface-600/30 rounded-xl;
+  }
+  .btn-primary {
+    @apply px-4 py-2.5 bg-brand-accent text-surface-800 font-semibold rounded-lg 
+           hover:brightness-110 active:scale-[0.98] transition-all duration-150 
+           shadow-lg shadow-brand-accent/20 text-sm;
+  }
+  .btn-secondary {
+    @apply px-4 py-2.5 bg-brand-secondary text-white font-medium rounded-lg 
+           hover:bg-brand-secondary/80 active:scale-[0.98] transition-all duration-150 text-sm;
+  }
+  .btn-ghost {
+    @apply px-4 py-2.5 text-slate-300 font-medium rounded-lg 
+           hover:bg-surface-700/50 active:scale-[0.98] transition-all duration-150 text-sm;
+  }
+  .input-field {
+    @apply w-full bg-surface-900 border border-surface-600/40 rounded-lg px-3 py-2.5 text-sm
+           text-white placeholder:text-slate-500
+           focus:outline-none focus:border-brand-tertiary focus:ring-1 focus:ring-brand-tertiary/50
+           transition-colors duration-150;
+  }
+  .badge {
+    @apply px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-accent to-brand-tertiary;
+  }
+}

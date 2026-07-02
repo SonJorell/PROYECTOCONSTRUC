@@ -1,0 +1,529 @@
+# StockSync React
+# Blueprint de Arquitectura y Especificación Técnica
+
+> **Versión:** 1.0  
+> **Estado:** Documento de Arquitectura Inicial  
+> **Framework Frontend:** React 18 + Vite  
+> **Lenguaje:** JavaScript (ES2022+)  
+> **Estilos:** Tailwind CSS  
+> **Backend:** Supabase (Database + Auth + Storage + Realtime)  
+> **Tipo de Aplicación:** Web SPA (Single Page Application)
+
+---
+
+# 1. Objetivo del Proyecto
+
+StockSync React es una aplicación web destinada a la administración de inventario, diseñada para ofrecer una interfaz moderna, rápida y escalable para empresas que requieren controlar productos, existencias, movimientos de stock y procesos de carga masiva de información.
+
+La aplicación prioriza:
+
+- Alto rendimiento.
+- Escalabilidad.
+- Código modular.
+- Fácil mantenimiento.
+- Integración nativa con Supabase.
+- Experiencia de usuario intuitiva.
+- Arquitectura preparada para futuras funcionalidades.
+
+---
+
+# 2. Stack Tecnológico
+
+| Tecnología | Función |
+|------------|---------|
+| React 18 | Interfaz de usuario |
+| Vite | Bundler y entorno de desarrollo |
+| Tailwind CSS | Framework de estilos |
+| Supabase | Backend as a Service |
+| PostgreSQL | Base de datos |
+| React Hooks | Gestión del estado |
+| html5-qrcode | Escaneo mediante cámara |
+| React Icons | Iconografía |
+| React Hot Toast | Notificaciones |
+| DayJS | Manejo de fechas |
+| PapaParse | Lectura de archivos CSV |
+
+---
+
+# 3. Principios de Arquitectura
+
+La aplicación debe desarrollarse siguiendo los siguientes principios:
+
+## Separación de responsabilidades
+
+Cada componente debe tener una única responsabilidad.
+
+Ejemplos:
+
+- Scanner → únicamente escanear códigos.
+- InventoryTable → únicamente mostrar datos.
+- ProductModal → únicamente editar productos.
+
+Nunca mezclar lógica de negocio con la presentación.
+
+---
+
+## Código reutilizable
+
+Los componentes deben ser reutilizables.
+
+Evitar:
+
+- Código duplicado
+- Funciones repetidas
+- Estados innecesarios
+
+---
+
+## Escalabilidad
+
+La estructura debe permitir agregar nuevas funcionalidades sin modificar grandes partes del proyecto.
+
+Ejemplos futuros:
+
+- Multi sucursales
+- Usuarios
+- Roles
+- Auditoría
+- Reportes
+- Dashboard financiero
+
+---
+
+## Bajo acoplamiento
+
+Los componentes no deben depender entre sí.
+
+Toda comunicación debe realizarse mediante:
+
+- Props
+- Context API
+- Hooks personalizados
+
+---
+
+# 4. Configuración del Entorno
+
+## Variables de Entorno
+
+Crear un archivo:
+
+```
+.env.local
+```
+
+En la raíz del proyecto.
+
+### Variables requeridas
+
+```env
+VITE_SUPABASE_URL=https://xxxxxxxx.supabase.co
+
+VITE_SUPABASE_ANON_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+## Importante
+
+Las variables utilizadas por Vite deben comenzar obligatoriamente con el prefijo:
+
+```
+VITE_
+```
+
+Estas variables serán consumidas únicamente mediante:
+
+```javascript
+import.meta.env
+```
+
+Ejemplo:
+
+```javascript
+const url = import.meta.env.VITE_SUPABASE_URL;
+```
+
+Nunca escribir credenciales directamente dentro del código fuente.
+
+---
+
+# 5. Arquitectura General
+
+```
+Usuario
+
+      │
+
+      ▼
+
+React UI
+
+      │
+
+      ▼
+
+Estados Globales
+
+      │
+
+      ▼
+
+Supabase Client
+
+      │
+
+      ▼
+
+PostgreSQL
+```
+
+La aplicación funcionará como una SPA donde React controla completamente la interfaz y Supabase actúa como proveedor del backend.
+
+---
+
+# 6. Estructura del Proyecto
+
+```
+stocksync-react/
+
+│
+
+├── public/
+
+│
+
+├── src/
+
+│   ├── assets/
+
+│   ├── components/
+
+│   │   ├── DashboardKPIs.jsx
+
+│   │   ├── FileDropzone.jsx
+
+│   │   ├── InventoryTable.jsx
+
+│   │   ├── ProductModal.jsx
+
+│   │   ├── ScannerModal.jsx
+
+│   │   ├── Navbar.jsx
+
+│   │   ├── Sidebar.jsx
+
+│   │   ├── LoadingSpinner.jsx
+
+│   │   └── ConfirmDialog.jsx
+
+│
+
+│   ├── hooks/
+
+│   │   ├── useInventory.js
+
+│   │   ├── useScanner.js
+
+│   │   └── useCSVImporter.js
+
+│
+
+│   ├── services/
+
+│   │   ├── inventoryService.js
+
+│   │   ├── uploadService.js
+
+│   │   └── productService.js
+
+│
+
+│   ├── utils/
+
+│   │   ├── csvParser.js
+
+│   │   ├── formatCurrency.js
+
+│   │   ├── validators.js
+
+│   │   └── helpers.js
+
+│
+
+│   ├── config/
+
+│   │   └── supabaseClient.js
+
+│
+
+│   ├── pages/
+
+│   │   └── Dashboard.jsx
+
+│
+
+│   ├── App.jsx
+
+│   ├── main.jsx
+
+│   └── index.css
+
+│
+
+├── .env.local
+
+├── package.json
+
+├── tailwind.config.js
+
+├── vite.config.js
+
+└── README.md
+```
+
+---
+
+# 7. Responsabilidad de Cada Módulo
+
+## DashboardKPIs
+
+Responsable de mostrar:
+
+- Total de productos
+- Stock total
+- Productos críticos
+- Valor del inventario
+- Productos agotados
+
+Debe actualizarse automáticamente al cambiar el inventario.
+
+---
+
+## InventoryTable
+
+Responsable de:
+
+- Mostrar productos
+- Ordenar columnas
+- Filtrar
+- Buscar
+- Paginar resultados
+
+No debe contener lógica de conexión con Supabase.
+
+---
+
+## ProductModal
+
+Permite:
+
+- Editar stock
+- Editar precio
+- Editar categoría
+- Editar proveedor
+- Guardar cambios
+
+Debe validar los datos antes de enviarlos.
+
+---
+
+## FileDropzone
+
+Responsable de:
+
+- Arrastrar archivos CSV
+- Validar formato
+- Limpiar datos
+- Convertir columnas
+- Procesar registros por lotes
+- Mostrar progreso
+- Mostrar errores
+
+---
+
+## ScannerModal
+
+Permite:
+
+- Abrir cámara
+- Escanear códigos de barras
+- Buscar automáticamente el producto
+- Cerrar cámara correctamente
+
+Debe liberar los recursos de la cámara al cerrar.
+
+---
+
+# 8. Flujo de Datos
+
+```
+Usuario
+
+↓
+
+Interfaz React
+
+↓
+
+Hooks
+
+↓
+
+Servicios
+
+↓
+
+Supabase
+
+↓
+
+Base de datos
+
+↓
+
+Respuesta
+
+↓
+
+Actualización del Estado
+
+↓
+
+Renderizado
+```
+
+---
+
+# 9. Organización de la Lógica
+
+Toda la lógica de negocio debe vivir en:
+
+```
+services/
+```
+
+Toda la lógica reutilizable debe vivir en:
+
+```
+hooks/
+```
+
+Toda la lógica auxiliar debe vivir en:
+
+```
+utils/
+```
+
+Los componentes únicamente deben encargarse del renderizado.
+
+---
+
+# 10. Convenciones de Código
+
+## Componentes
+
+PascalCase
+
+```
+InventoryTable.jsx
+```
+
+## Hooks
+
+camelCase iniciando con use
+
+```
+useInventory.js
+```
+
+## Funciones
+
+camelCase
+
+```javascript
+loadProducts()
+```
+
+## Variables
+
+camelCase
+
+```javascript
+currentInventory
+```
+
+## Constantes
+
+UPPER_CASE
+
+```javascript
+MAX_UPLOAD_SIZE
+```
+
+---
+
+# 11. Objetivos de Rendimiento
+
+La aplicación debe cumplir los siguientes objetivos:
+
+- Tiempo inicial de carga inferior a 2 segundos.
+- Renderizado fluido de tablas con miles de registros.
+- Consultas paginadas.
+- Evitar renderizados innecesarios.
+- Uso de React.memo cuando corresponda.
+- Uso de useMemo para cálculos pesados.
+- Uso de useCallback para funciones reutilizadas.
+
+---
+
+# 12. Escalabilidad Futura
+
+La arquitectura debe permitir incorporar:
+
+- Sistema de autenticación.
+- Roles de usuario.
+- Permisos.
+- Historial de movimientos.
+- Dashboard avanzado.
+- Reportes PDF.
+- Exportación Excel.
+- Alertas automáticas.
+- Notificaciones en tiempo real.
+- Integración con lectores de código de barras.
+- API REST externa.
+- Sincronización offline.
+- Aplicación móvil.
+
+---
+
+# 13. Buenas Prácticas
+
+- Nunca duplicar código.
+- Mantener componentes pequeños.
+- Evitar archivos mayores a 300 líneas cuando sea posible.
+- Documentar funciones complejas.
+- Validar entradas del usuario.
+- Manejar correctamente los errores.
+- Utilizar variables de entorno.
+- No almacenar claves privadas en el frontend.
+- Mantener una estructura consistente en todo el proyecto.
+
+---
+
+# 14. Estado Actual del Proyecto
+
+## Backend
+
+- Base de datos inicializada.
+- Más de 68.700 registros disponibles.
+- Supabase operativo.
+- Conexión Cloud Serverless funcional.
+
+## Frontend
+
+Pendiente de desarrollo siguiendo esta arquitectura.
+
+---
+
+# 15. Objetivo Final
+
+Construir una aplicación web moderna, escalable y de alto rendimiento para la gestión integral de inventarios, utilizando React como frontend y Supabase como backend, siguiendo principios de arquitectura limpia, modularidad y mantenibilidad que faciliten su evolución a largo plazo.
